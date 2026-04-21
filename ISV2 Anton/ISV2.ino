@@ -1,6 +1,3 @@
-// TEst demo TEST
-
-
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Adafruit_NeoPixel.h>
@@ -31,7 +28,7 @@ unsigned long lastBlink = 0;
 
 
 
-const int rowPins[8 = {19, 17, 15};
+const int rowPins[8] = {19, 17, 15};
 const int colPins[8] = {2, 23, 22};
 bool lastButtonState[64] = {false};
 bool started = true;
@@ -88,8 +85,8 @@ void parseSelect(String msg){
 
     start = data.length();
   } else{
-    item = data.subString(start, commma);
-    start comma +1;
+    item = data.substring(start, comma);
+    start = comma +1;
   }
 
   int dash = item.indexOf('-');
@@ -122,7 +119,7 @@ pixels.show();
 }
 
 void parseBoard(String board){
-  for(int i = 0; i < 64, i++){
+  for(int i = 0; i < 64; i++){
     char p = board.charAt(i);
 
     if(p == '.'){
@@ -206,23 +203,24 @@ void loop() {
 
     if(client.connect(serverIP,serverPort)){
       client.println("SYNC");
-      String response = readResponse();
+      String response = client.readStringUntil('\n');
+      response.trim();
 
-      if(response.startWith("SELECT:")){
+      if(response.startsWith("SELECT:")){
         clearBoard();
 
-        praseSelect(response.substring(7));
+        parseSelect(response.substring(7));
       }
 
-      else if(response.startWith("BOARD:")){
-        parseBoard(response.subString(6);)
+      else if(response.startsWith("BOARD:")){
+        parseBoard(response.substring(6));
       }
 
-      else if(response.startWith("TURN:")){
+      else if(response.startsWith("TURN:")){
         setTurn(response.charAt(5));
       }
 
-      client.stop()
+      client.stop();
     }
   }
 
